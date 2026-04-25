@@ -13,43 +13,28 @@ Es gab in den Berliner Souvenirläden auch ein Tischmodell dieser Uhr zu kaufen 
 
 Der Microtronic kann jetzt auch Berlin-Uhr! Wer kann die richtige Uhrzeit erkennen? 
 
-Das [Berlin-Uhr-Microtronic-Programm](https://github.com/rab-berlin/ESP2090/blob/main/program/berlinuhr/berlin.mic) dazu ist einfach. 
+Das [Berlin-Uhr-Microtronic-Programm](https://github.com/rab-berlin/BerlinUhr2090/blob/main/program/BerlinUhr.pdf) dazu ist verhältnismäßig einfach aufgebaut und wie immer fleißig dokumentiert. Und hier die entsprechende [MIC-Datei](https://github.com/rab-berlin/BerlinUhr2090/blob/main/program/berlin.mic) für den Upload auf den Microtronic 2090.
 
 Alles, was auf der LED-Matrix angezeigt werden soll, befindet sich in den Speicherregistern 0-F. Ein gesetztes Bit bedeutet, dass die entsprechende LED leuchtet, ein nicht gesetztes Bit lässt die LED ausgeschaltet. Im Unterprogramm _Frame_ werden die Werte in den Speicherregistern schnell hintereinander auf die Ausgänge gelegt. Der ESP liest diese Werte und steuert die LED-Matrix entsprechend. Für ein genaues Timing gibt es noch ein REQ-Signal vom ESP und ein ACK-Signal vom Microtronic.
 
 ```
-
 Frame      DIN REQ-ACK-CLEAR           Auf REQ warten
-
-&#x20;          ANDI #1,REQ-ACK-CLEAR       .
-
-&#x20;          BRZ Frame                   .
-
-&#x20;          DOT REQ-ACK-CLEAR           ACK senden
-
-&#x20;          EXRL                        Speicherregister 0-7 in Arbeitsregister holen
-
-&#x20;          DOT r0                      Alle Register 0-F als Nibble senden
-
-&#x20;          DOT r1                      .
-
-&#x20;          DOT r2                      .
-
-&#x20;          ...                         .
-
-&#x20;          DOT rF                      .
-
-&#x20;          EXRL                        Speicherregister 0-7 wieder zurück
-
-&#x20;          MOVI #0,REQ-ACK-CLEAR       Null auf Ausgänge legen
-
-&#x20;          DOT REQ-ACK-CLEAR           .
-
-&#x20;          RET	
-
+           ANDI #1,REQ-ACK-CLEAR       .
+           BRZ Frame                   .
+           DOT REQ-ACK-CLEAR           ACK senden
+           EXRL                        Speicherregister 0-7 in Arbeitsregister holen
+           DOT r0                      Alle Register 0-F als Nibble senden
+           DOT r1                      .
+           DOT r2                      .
+           ...                         .
+           DOT rF                      .
+           EXRL                        Speicherregister 0-7 wieder zurück
+           MOVI #0,REQ-ACK-CLEAR       Null auf Ausgänge legen
+           DOT REQ-ACK-CLEAR           .
+           RET	
 ```
 
-Standard ist übrigens, dass alle LEDs nur rot leuchten. Man kann dem ESP2090-Studio über ein User-Skript [farbmatrix.py](https://github.com/rab-berlin/ESP2090/blob/main/program/berlinuhr/farbmatrix.py) allerdings vorher mitteilen, welche Farbe jede einzelne LED der Matrix annehmen soll, wenn sie eingeschaltet wird. Dann wird's schön bunt.
+Standard ist übrigens, dass alle LEDs nur rot leuchten. Man kann dem ESP2090-Studio über ein User-Skript [farbmatrix.py](https://github.com/rab-berlin/BerlinUhr2090/blob/main/program/farbmatrix.py) allerdings vorher mitteilen, welche Farbe jede einzelne LED der Matrix annehmen soll, wenn sie eingeschaltet wird. Dann wird's schön bunt.
 
 Im Hauptprogramm wird die Zeit mit TIME aktualisiert, dementsprechend die einzelnen Speicherregister mit Werten gefüllt und schließlich das Unterprogramm aufgerufen, um den Frame zu übermitteln. 
 

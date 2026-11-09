@@ -11,4 +11,5 @@ color_matrix = [
     ["orange","orange","orange","orange","orange","orange","orange","orange"],
 ]
 
-setColors(color_matrix)
+# setColors erwartet 64 Farbnamen, oberste Zeile zuerst
+setColors([farbe for zeile in color_matrix for farbe in zeile])
